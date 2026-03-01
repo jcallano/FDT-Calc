@@ -34,8 +34,8 @@ jobs:
       - name: Subir artefactos
         uses: actions/upload-pages-artifact@v3
         with:
-          # Sube toda la raíz del repositorio (donde está index.html)
-          path: '.'
+          # Sube la carpeta ftd_webapp donde está index.html
+          path: './ftl_webapp'
 
       - name: Desplegar a GitHub Pages
         id: deployment
