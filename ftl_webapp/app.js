@@ -34,6 +34,17 @@ function detectOS() {
     return 'Windows';
 }
 
+function applyMobileOptimizations(osLabel) {
+    const timeInput = document.getElementById('timeLocal');
+    if (osLabel === 'iOS' || osLabel === 'Android' || osLabel === 'Windows Phone') {
+        // En móviles, restaurar el tipo 'time' para aprovechar sus hermosas ruletas nativas
+        timeInput.type = 'time';
+    } else {
+        // En Desktop mantener 'text' con patrón 'HHMM' para sortear problemas de AM/PM
+        timeInput.type = 'text';
+    }
+}
+
 // FTL Data Tables (Section 7 OM-A)
 // Table A: Acclimatised (Sectors 1 to 8+)
 const tableA = [
@@ -95,7 +106,8 @@ function addTime(t1, t2) {
 
 // DOM Elements & Events
 document.addEventListener('DOMContentLoaded', () => {
-    detectOS();
+    const currentOS = detectOS();
+    applyMobileOptimizations(currentOS);
 
     // UI Logic
     const acclimatisedCheck = document.getElementById('acclimatised');
