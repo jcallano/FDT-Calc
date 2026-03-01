@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ftl-calculator-v1';
+const CACHE_NAME = 'ftl-calculator-v2';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -22,13 +22,18 @@ self.addEventListener('install', event => {
 
 self.addEventListener('fetch', event => {
     event.respondWith(
-        caches.match(event.request)
+        fetch(event.request)
             .then(response => {
-                // Cache hit - return response
-                if (response) {
-                    return response;
-                }
-                return fetch(event.request);
+                // If network is successful, clone response and update cache
+                const responseClone = response.clone();
+                caches.open(CACHE_NAME).then(cache => {
+                    cache.put(event.request, responseClone);
+                });
+                return response;
+            })
+            .catch(() => {
+                // On network failure (offline), return cached version
+                return caches.match(event.request);
             })
     );
 });
