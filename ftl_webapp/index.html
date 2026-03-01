@@ -43,8 +43,10 @@
                 <form id="ftlForm">
                     <!-- REPORT TIME LOCAL -->
                     <div class="input-group">
-                        <label for="timeLocal">Report Time (Local Time)</label>
-                        <input type="time" id="timeLocal" required class="native-input">
+                        <label for="timeLocal">Report Time (Local 24h)</label>
+                        <input type="text" id="timeLocal" inputmode="numeric" placeholder="HHMM (e.g. 1430)"
+                            maxlength="5" pattern="^([01]\d|2[0-3]):?[0-5]\d$"
+                            title="Enter time in 24-hour format, e.g., 1430" required class="native-input">
                     </div>
 
                     <!-- TIMEZONE OFFSET -->

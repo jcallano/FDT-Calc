@@ -115,13 +115,22 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        const timeLocalStr = document.getElementById('timeLocal').value; // HH:MM Local
+        let rawTime = document.getElementById('timeLocal').value.replace(':', '');
+        if (rawTime.length < 3 || rawTime.length > 4) {
+            alert("Formato Inválido. Usa formato 24h como 0830 o 1445.");
+            return;
+        }
+
+        // Pad with leading zero if they typed 3 digits e.g. "830" -> "0830"
+        rawTime = rawTime.padStart(4, '0');
+        const hStr = rawTime.substring(0, 2);
+        const mStr = rawTime.substring(2, 4);
+        const timeLocalStr = `${hStr}:${mStr}`;
+
         const tzOffset = parseInt(document.getElementById('tzOffset').value, 10);
         const sectorsIdx = parseInt(document.getElementById('sectors').value, 10) - 1;
         const isAcclimatised = document.getElementById('acclimatised').checked;
         const prevRest = document.getElementById('prevRest').value;
-
-        if (!timeLocalStr) return;
 
         // Base minutes for calculations
         let localMin = timeStringToInt(timeLocalStr);
