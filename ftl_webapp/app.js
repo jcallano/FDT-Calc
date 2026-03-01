@@ -115,30 +115,35 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        const timeZulu = document.getElementById('timeZulu').value; // HH:MM
+        const timeLocalStr = document.getElementById('timeLocal').value; // HH:MM Local
         const tzOffset = parseInt(document.getElementById('tzOffset').value, 10);
         const sectorsIdx = parseInt(document.getElementById('sectors').value, 10) - 1;
         const isAcclimatised = document.getElementById('acclimatised').checked;
         const prevRest = document.getElementById('prevRest').value;
 
-        if (!timeZulu) return;
+        if (!timeLocalStr) return;
 
-        // Calculate Local Time
-        let zuluMin = timeStringToInt(timeZulu);
-        let localMin = zuluMin + (tzOffset * 60);
+        // Base minutes for calculations
+        let localMin = timeStringToInt(timeLocalStr);
+        let zuluMin = localMin - (tzOffset * 60);
 
-        // Handle negative & > 24h
-        if (localMin < 0) localMin += 24 * 60;
-        localMin = localMin % (24 * 60);
+        // Handle negative & > 24h for Zulu
+        if (zuluMin < 0) zuluMin += 24 * 60;
+        zuluMin = zuluMin % (24 * 60);
 
-        const locH = Math.floor(localMin / 60);
-        const locM = localMin % 60;
-        const localTimeStr = `${String(locH).padStart(2, '0')}:${String(locM).padStart(2, '0')}`;
+        // Oman is UTC + 4
+        let omanMin = zuluMin + (4 * 60);
+        if (omanMin < 0) omanMin += 24 * 60;
+        omanMin = omanMin % (24 * 60);
 
-        document.getElementById('resLocalTime').textContent = localTimeStr;
+        // Helper string builder
+        const toHHMM = (min) => `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`;
 
+        const timeZuluStr = toHHMM(zuluMin);
+        const timeOmanStr = toHHMM(omanMin);
+
+        // Calculate Max FDP
         let maxFDP = '--';
-
         if (isAcclimatised) {
             maxFDP = calcMaxFDPTableA(localMin, sectorsIdx);
         } else {
@@ -147,11 +152,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('resMaxFdp').textContent = maxFDP;
 
-        let localEndTime = addTime(localTimeStr, maxFDP);
-        document.getElementById('resBaseEndTime').textContent = localEndTime;
+        // --- Calculate End Times ---
 
-        document.getElementById('resTotalFdp').textContent = addTime(maxFDP, '03:00'); // PIC discretion is up to 3 hours
-        document.getElementById('resExtendedEndTime').textContent = addTime(localEndTime, '03:00');
+        // 1. Base End Time
+        let endLocalStr = addTime(timeLocalStr, maxFDP);
+        let endZuluStr = addTime(timeZuluStr, maxFDP);
+        let endOmanStr = addTime(timeOmanStr, maxFDP);
+
+        document.getElementById('resBaseEndTimeLocal').textContent = endLocalStr + ' Local';
+        document.getElementById('resBaseEndTimeZulu').textContent = endZuluStr + ' Zulu';
+        document.getElementById('resBaseEndTimeOman').textContent = endOmanStr + ' Oman';
+
+        // 2. Extended FDP & Extended End Time (PIC + 3)
+        let totalFdpStr = addTime(maxFDP, '03:00');
+        document.getElementById('resTotalFdp').textContent = totalFdpStr;
+
+        let extLocalStr = addTime(endLocalStr, '03:00');
+        let extZuluStr = addTime(endZuluStr, '03:00');
+        let extOmanStr = addTime(endOmanStr, '03:00');
+
+        document.getElementById('resExtendedEndTimeLocal').textContent = extLocalStr + ' Local';
+        document.getElementById('resExtendedEndTimeZulu').textContent = extZuluStr + ' Zulu';
+        document.getElementById('resExtendedEndTimeOman').textContent = extOmanStr + ' Oman';
 
         resultCard.style.display = 'block';
     });

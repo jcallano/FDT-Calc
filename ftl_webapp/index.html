@@ -41,15 +41,15 @@
                 <h2>Flight Duty Parameters</h2>
 
                 <form id="ftlForm">
-                    <!-- REPORT TIME ZULU -->
+                    <!-- REPORT TIME LOCAL -->
                     <div class="input-group">
-                        <label for="timeZulu">Report Time (Zulu)</label>
-                        <input type="time" id="timeZulu" required class="native-input">
+                        <label for="timeLocal">Report Time (Local Time)</label>
+                        <input type="time" id="timeLocal" required class="native-input">
                     </div>
 
                     <!-- TIMEZONE OFFSET -->
                     <div class="input-group">
-                        <label for="tzOffset">Local Timezone Offset (Hrs)</label>
+                        <label for="tzOffset">Local Timezone Offset (vs UTC)</label>
                         <select id="tzOffset" required class="native-input">
                             <option value="">Select Offset...</option>
                             <option value="-12">UTC -12:00</option>
@@ -134,35 +134,46 @@
             <div class="glass-card result-card" id="resultCard" style="display: none;">
                 <h2>Calculation Results</h2>
 
-                <div class="result-item">
-                    <span class="label">Local Report Time</span>
-                    <span class="value accent" id="resLocalTime">--:--</span>
-                </div>
-
-                <!-- Base FDP Results -->
                 <div class="result-divider"></div>
+
                 <div class="result-item">
                     <span class="label">Max Flight Duty Period (FDP)</span>
                     <span class="value highlight" id="resMaxFdp">--</span>
                 </div>
+
                 <div class="result-item">
-                    <span class="label">Duty End Time (Local)</span>
-                    <span class="value highlight" id="resBaseEndTime">--:--</span>
+                    <span class="label">Duty End Time</span>
+                    <div class="time-block">
+                        <span class="value accent" id="resBaseEndTimeLocal">--:-- Local</span>
+                        <br><span class="value" id="resBaseEndTimeZulu"
+                            style="font-size:0.85em; color:var(--text-secondary);">--:-- Zulu</span>
+                        <br><span class="value" id="resBaseEndTimeOman"
+                            style="font-size:0.85em; color:var(--text-secondary);">--:-- Oman</span>
+                    </div>
                 </div>
 
                 <!-- Extended FDP Results -->
                 <div class="result-divider"></div>
+
                 <div class="result-item">
                     <span class="label">PIC Discretion Extension</span>
                     <span class="value warning" id="resPicDiscretion">Up to 3 hours</span>
                 </div>
+
                 <div class="result-item">
-                    <span class="label">Total Max FDP (with Discretion)</span>
+                    <span class="label">Total Max Extended FDP</span>
                     <span class="value critical" id="resTotalFdp">--</span>
                 </div>
+
                 <div class="result-item">
-                    <span class="label">Extended End Time (Local)</span>
-                    <span class="value critical" id="resExtendedEndTime">--:--</span>
+                    <span class="label">Extended End Time</span>
+                    <div class="time-block" style="text-align: right;">
+                        <span class="value critical" id="resExtendedEndTimeLocal">--:-- Local</span>
+                        <br><span class="value" id="resExtendedEndTimeZulu"
+                            style="font-size:0.85em; color:var(--text-secondary);">--:-- Zulu</span>
+                        <br><span class="value" id="resExtendedEndTimeOman"
+                            style="font-size:0.85em; color:var(--text-secondary);">--:-- Oman</span>
+                    </div>
                 </div>
             </div>
         </main>
