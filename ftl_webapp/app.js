@@ -1,37 +1,45 @@
 // FTL Calculator App Logic
 
-// OS Detection
 function detectOS() {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
     const badge = document.getElementById('osBadge');
 
-    // Windows Phone must come first because its UA also contains "Android"
+    // Función par inyectar clases a nivel HTML y Body asegurando compatibilidad CSS
+    const setOSClass = (osClass, text) => {
+        document.documentElement.classList.add(osClass);
+        document.body.classList.add(osClass);
+        if (badge) badge.textContent = text;
+    };
+
+    // Windows Phone 
     if (/windows phone/i.test(userAgent)) {
-        document.body.classList.add('windows');
-        badge.textContent = 'Windows Phone';
+        setOSClass('windows', 'Windows Phone');
         return 'Windows Phone';
     }
+    // Android
     if (/android/i.test(userAgent)) {
-        document.body.classList.add('android');
-        badge.textContent = 'Android';
+        setOSClass('android', 'Android');
         return 'Android';
     }
     // iOS detection (including iPadOS 13+ which masks as Mac)
-    const isIOS = /iPad|iPhone|iPod/.test(userAgent) || (/Macintosh/i.test(userAgent) && navigator.maxTouchPoints && navigator.maxTouchPoints > 1);
+    const isIOS = /iPad|iPhone|iPod/.test(userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
     if (isIOS && !window.MSStream) {
-        document.body.classList.add('ios');
-        badge.textContent = 'iOS';
+        setOSClass('ios', 'iOS');
         return 'iOS';
     }
     // Mac detection
     if (/Macintosh|MacIntel|MacPPC|Mac68K/.test(userAgent)) {
+        document.documentElement.classList.add('desktop', 'mac');
         document.body.classList.add('desktop', 'mac');
-        badge.textContent = 'macOS';
+        if (badge) badge.textContent = 'macOS';
         return 'macOS';
     }
     // Windows Desktop Default
+    document.documentElement.classList.add('desktop', 'windows');
     document.body.classList.add('desktop', 'windows');
-    badge.textContent = 'Windows PC';
+    if (badge) badge.textContent = 'Windows PC';
     return 'Windows';
 }
 
@@ -120,6 +128,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('ftlForm');
     const resultCard = document.getElementById('resultCard');
 
+    // UI Logic PIC Discretion
+    const picDiscretion = document.getElementById('picDiscretion');
+    const picLabel2 = document.getElementById('picLabel2');
+    const picLabel3 = document.getElementById('picLabel3');
+
+    picDiscretion.addEventListener('change', (e) => {
+        if (e.target.checked) {
+            picLabel3.style.fontWeight = 'bold';
+            picLabel3.style.color = 'var(--warning-color)';
+            picLabel2.style.fontWeight = 'normal';
+            picLabel2.style.color = 'var(--text-secondary)';
+        } else {
+            picLabel2.style.fontWeight = 'bold';
+            picLabel2.style.color = 'var(--warning-color)';
+            picLabel3.style.fontWeight = 'normal';
+            picLabel3.style.color = 'var(--text-secondary)';
+        }
+    });
+
     acclimatisedCheck.addEventListener('change', (e) => {
         if (e.target.checked) {
             prevRestGroup.style.display = 'none';
@@ -189,13 +216,16 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('resBaseEndTimeZulu').textContent = endZuluStr + ' Zulu';
         document.getElementById('resBaseEndTimeOman').textContent = endOmanStr + ' Oman';
 
-        // 2. Extended FDP & Extended End Time (PIC + 3)
-        let totalFdpStr = addTime(maxFDP, '03:00');
+        // 2. Extended FDP & Extended End Time (PIC Extension)
+        const picExtendHours = document.getElementById('picDiscretion').checked ? '03:00' : '02:00';
+        document.getElementById('resPicDiscretion').textContent = `Up to ${parseInt(picExtendHours)} hours`;
+
+        let totalFdpStr = addTime(maxFDP, picExtendHours);
         document.getElementById('resTotalFdp').textContent = totalFdpStr;
 
-        let extLocalStr = addTime(endLocalStr, '03:00');
-        let extZuluStr = addTime(endZuluStr, '03:00');
-        let extOmanStr = addTime(endOmanStr, '03:00');
+        let extLocalStr = addTime(endLocalStr, picExtendHours);
+        let extZuluStr = addTime(endZuluStr, picExtendHours);
+        let extOmanStr = addTime(endOmanStr, picExtendHours);
 
         document.getElementById('resExtendedEndTimeLocal').textContent = extLocalStr + ' Local';
         document.getElementById('resExtendedEndTimeZulu').textContent = extZuluStr + ' Zulu';

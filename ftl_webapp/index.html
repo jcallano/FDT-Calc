@@ -126,6 +126,20 @@
                         <small class="hint-text">Calculations based on 2+ Pilots.</small>
                     </div>
 
+                    <!-- PIC DISCRETION TOGGLE -->
+                    <div class="input-group switch-group">
+                        <label for="picDiscretion">PIC Discretion Extension</label>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span id="picLabel2" style="font-size: 0.8rem; color: var(--text-secondary);">2 hrs</span>
+                            <label class="switch">
+                                <input type="checkbox" id="picDiscretion" checked>
+                                <span class="slider round"></span>
+                            </label>
+                            <span id="picLabel3"
+                                style="font-size: 0.8rem; color: var(--warning-color); font-weight: bold;">3 hrs</span>
+                        </div>
+                    </div>
+
                     <button type="submit" class="btn-primary native-btn" id="calculateBtn">
                         <span class="btn-text">Calculate Limits</span>
                     </button>
