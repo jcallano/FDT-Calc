@@ -16,8 +16,9 @@ function detectOS() {
         badge.textContent = 'Android';
         return 'Android';
     }
-    // iOS detection
-    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+    // iOS detection (including iPadOS 13+ which masks as Mac)
+    const isIOS = /iPad|iPhone|iPod/.test(userAgent) || (/Macintosh/i.test(userAgent) && navigator.maxTouchPoints && navigator.maxTouchPoints > 1);
+    if (isIOS && !window.MSStream) {
         document.body.classList.add('ios');
         badge.textContent = 'iOS';
         return 'iOS';
@@ -39,6 +40,10 @@ function applyMobileOptimizations(osLabel) {
     if (osLabel === 'iOS' || osLabel === 'Android' || osLabel === 'Windows Phone') {
         // En móviles, restaurar el tipo 'time' para aprovechar sus hermosas ruletas nativas
         timeInput.type = 'time';
+        timeInput.removeAttribute('inputmode');
+        timeInput.removeAttribute('pattern');
+        timeInput.removeAttribute('maxlength');
+        timeInput.placeholder = '';
     } else {
         // En Desktop mantener 'text' con patrón 'HHMM' para sortear problemas de AM/PM
         timeInput.type = 'text';
