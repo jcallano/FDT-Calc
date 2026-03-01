@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Oman Air FTL Calculator</title>
+
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e293b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FTL Calc">
+
+    <!-- Material Symbols Vector Icons for Modern feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="loading">
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="logo-area">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="flight-icon">
+                    <path
+                        d="M21 16V14L13 9V3.5C13 2.67 12.33 2 11.5 2C10.67 2 10 2.67 10 3.5V9L2 14V16L10 13.5V19L8 20.5V22L11.5 21L15 22V20.5L13 19V13.5L21 16Z"
+                        fill="currentColor" />
+                </svg>
+                <h1>FTL Calculator</h1>
+            </div>
+            <div class="os-badge" id="osBadge">Detecting...</div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="app-content">
+            <div class="glass-card">
+                <h2>Flight Duty Parameters</h2>
+
+                <form id="ftlForm">
+                    <!-- REPORT TIME ZULU -->
+                    <div class="input-group">
+                        <label for="timeZulu">Report Time (Zulu)</label>
+                        <input type="time" id="timeZulu" required class="native-input">
+                    </div>
+
+                    <!-- TIMEZONE OFFSET -->
+                    <div class="input-group">
+                        <label for="tzOffset">Local Timezone Offset (Hrs)</label>
+                        <select id="tzOffset" required class="native-input">
+                            <option value="">Select Offset...</option>
+                            <option value="-12">UTC -12:00</option>
+                            <option value="-11">UTC -11:00</option>
+                            <option value="-10">UTC -10:00</option>
+                            <option value="-9">UTC -09:00</option>
+                            <option value="-8">UTC -08:00</option>
+                            <option value="-7">UTC -07:00</option>
+                            <option value="-6">UTC -06:00</option>
+                            <option value="-5">UTC -05:00</option>
+                            <option value="-4">UTC -04:00</option>
+                            <option value="-3">UTC -03:00</option>
+                            <option value="-2">UTC -02:00</option>
+                            <option value="-1">UTC -01:00</option>
+                            <option value="0">UTC ±00:00 (Zulu)</option>
+                            <option value="1">UTC +01:00</option>
+                            <option value="2">UTC +02:00</option>
+                            <option value="3">UTC +03:00</option>
+                            <option value="4" selected>UTC +04:00 (Oman)</option>
+                            <option value="5">UTC +05:00</option>
+                            <option value="6">UTC +06:00</option>
+                            <option value="7">UTC +07:00</option>
+                            <option value="8">UTC +08:00</option>
+                            <option value="9">UTC +09:00</option>
+                            <option value="10">UTC +10:00</option>
+                            <option value="11">UTC +11:00</option>
+                            <option value="12">UTC +12:00</option>
+                        </select>
+                    </div>
+
+                    <!-- NUMBER OF SECTORS -->
+                    <div class="input-group">
+                        <label for="sectors">Number of Sectors</label>
+                        <select id="sectors" required class="native-input">
+                            <option value="1">1 Sector</option>
+                            <option value="2">2 Sectors</option>
+                            <option value="3">3 Sectors</option>
+                            <option value="4">4 Sectors</option>
+                            <option value="5">5 Sectors</option>
+                            <option value="6">6 Sectors</option>
+                            <option value="7">7 Sectors</option>
+                            <option value="8">8 or more Sectors</option>
+                        </select>
+                    </div>
+
+                    <!-- ACCLIMATISATION TOGGLE -->
+                    <div class="input-group switch-group">
+                        <label for="acclimatised">Acclimatised</label>
+                        <label class="switch">
+                            <input type="checkbox" id="acclimatised" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <!-- PREVIOUS REST (Only shows if NOT acclimatised) -->
+                    <div class="input-group" id="prevRestGroup" style="display: none;">
+                        <label for="prevRest">Preceding Rest Duration</label>
+                        <select id="prevRest" class="native-input">
+                            <option value="over30">Up to 18 hrs or over 30 hrs</option>
+                            <option value="between18and30">Between 18 and 30 hrs</option>
+                        </select>
+                    </div>
+
+                    <!-- FLIGHT CREW SIZE -->
+                    <div class="input-group switch-group">
+                        <label for="flightCrew">Two or more Flight Crew</label>
+                        <label class="switch">
+                            <input type="checkbox" id="flightCrew" checked disabled>
+                            <!-- Disable for now as rules state Tables are for 2+ Crew -->
+                            <span class="slider round disabled"></span>
+                        </label>
+                        <small class="hint-text">Calculations based on 2+ Pilots.</small>
+                    </div>
+
+                    <button type="submit" class="btn-primary native-btn" id="calculateBtn">
+                        <span class="btn-text">Calculate Limits</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- RESULTS CARD (Hidden initially) -->
+            <div class="glass-card result-card" id="resultCard" style="display: none;">
+                <h2>Calculation Results</h2>
+
+                <div class="result-item">
+                    <span class="label">Local Report Time</span>
+                    <span class="value accent" id="resLocalTime">--:--</span>
+                </div>
+
+                <!-- Base FDP Results -->
+                <div class="result-divider"></div>
+                <div class="result-item">
+                    <span class="label">Max Flight Duty Period (FDP)</span>
+                    <span class="value highlight" id="resMaxFdp">--</span>
+                </div>
+                <div class="result-item">
+                    <span class="label">Duty End Time (Local)</span>
+                    <span class="value highlight" id="resBaseEndTime">--:--</span>
+                </div>
+
+                <!-- Extended FDP Results -->
+                <div class="result-divider"></div>
+                <div class="result-item">
+                    <span class="label">PIC Discretion Extension</span>
+                    <span class="value warning" id="resPicDiscretion">Up to 3 hours</span>
+                </div>
+                <div class="result-item">
+                    <span class="label">Total Max FDP (with Discretion)</span>
+                    <span class="value critical" id="resTotalFdp">--</span>
+                </div>
+                <div class="result-item">
+                    <span class="label">Extended End Time (Local)</span>
+                    <span class="value critical" id="resExtendedEndTime">--:--</span>
+                </div>
+            </div>
+        </main>
+
+        <div id="installPromotion" class="install-prompt" style="display: none;">
+            <p>Install this app for offline use</p>
+            <button id="installBtn" class="btn-small">Install</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
